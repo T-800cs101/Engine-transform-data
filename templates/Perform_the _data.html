@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script>
+	function toggle(source) {
+  checkboxes = document.getElementsByName('check');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+
+	function showLoading(){
+    	document.getElementById('loader').style.display = 'block';
+    	document.getElementById("main_content").disabled = true;
+    	$("#main_content").css("display","none");
+    	$("#logout_btn").attr("disabled","true");
+	}
+
+document.onreadystatechange = function() {
+            if (document.readyState !== "complete") {
+                document.querySelector(
+                  "body").style.visibility = "hidden";
+                document.querySelector(
+                  "#loader").style.visibility = "visible";
+
+            } else {
+                document.querySelector(
+                  "#loader").style.display = "none";
+
+                document.querySelector(
+                  "body").style.visibility = "visible";
+            }
+        };
+
+</script>
+<style>
+		#loader{
+			display:none;
+		}
+        #loader{
+            border: 12px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 12px solid #D54519;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+            z-index: 999;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .center {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+    </style>
+<br>
+<br>
+<div id="loader" class="center"></div>
+
+ <div class="container" id="main_content">
+  <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+	  <button class="btn" type="submit"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit"><a href="{% url 'mapping_data'%}">Mapping Data</a></button>
+    <button class="btn" type="submit" id="active"><a href="#">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+
+
+  <div class="container" id="container_perform">
+      <div class="row">
+    <div class="col-md-3" id="col-md-3">
+        <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+          <li><button class="btn" type="submit" id="active_1"><a href="#">Perform the Data</a></button></li>
+      </ul>
+			 {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+{% endif %}
+	  </div>
+    </div>
+    <div class="col-md-9" id="col_md_9">
+        <div id="select_output">
+			<form  method="post" id="form_action" onsubmit='showLoading();'>
+				{% csrf_token %}
+	<select id="select" name="select" required>
+		<option></option>
+		{% for item in obj_1 %}
+		<option>{{item.event}}</option>
+		{% endfor %}
+	</select>
+	<select id="select_1" name="select" required>
+		<option></option>
+		{% for item in obj_1 %}
+		<option>{{item.period}}</option>
+		{% endfor %}
+	</select>
+	<select id="select_2" name="select" required>
+		<option></option>
+		{% for item in obj_2 %}
+		<option>{{item.setName}}</option>
+		{% endfor %}
+	</select><br>
+	<div class="table">
+				<table>
+					<tr>
+					<th><input type="checkbox" id="0" name="vehicle1" value="" onClick="toggle(this)"></th>
+					<th>EVENT</th>
+					<th>PERIOD</th>
+					<th>TIMESTAMP</th>
+					<th>LAST&nbsp;RUN</th>
+					<th>SET</th>
+					<th>USER</th>
+					</tr>
+					{% for item in obj %}
+					<tr>
+					<td><input type="checkbox" id="{{ item.id }}" name="check" value="{{ item.id }}"></td>
+					<td>{{ item.event }}</td>
+					<td>{{ item.period }}</td>
+					<td>{{ item.timestampImportD }}</td>
+					<td>{{ item.lastRun }}</td>
+					<td>{{ item.setName.setName }}</td>
+					<td>{{ item.user.username }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+				</div>
+				</form>
+            <div id="perform_btn">
+            <button class="btn" type="submit" form="form_action" name="delete">Delete</button>
+            <button class="btn" type="submit" form="form_action" name="run">Run</button>
+            </div>
+
+  </div>
+    </div>
+	
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+ 
+
+
+</div>
+{% endblock %}

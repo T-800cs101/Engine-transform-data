@@ -1,0 +1,1427 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    rule_name = $('#rule_name').val();
+    if(rule_name != ''){
+    	if(rule_name == 'New Rule'){
+			$('#apply').css("display", "none");
+         }
+         else{
+          	$('#save').css("display", "none");
+         }
+
+    }
+    else{
+        $('#apply').css("display", "none");
+        $('#apply').attr("disabled", "true");
+    }
+
+});
+function addRuleInputs(){
+$('#rule_name').val('');
+$('#select_e_rules_2').append('<input type="hidden"  name="inputs_clicked" value="1" form="main_form">');
+
+var max_length = document.getElementById("select_e_rules").getElementsByTagName("ul").length;
+var numrelated = $('#select_e_rules > ul:visible').length;
+var inputs_len = {{rules_obj|length}}
+
+if(numrelated == 1){
+
+	$('#input_param2').css("display", "flex");
+	$('#select_s').val('');
+	$('#select_1_s').val('');
+	$('#select_3_s').val('');
+	$('#select_e_rules_2').append('<input type="hidden" name="inputP" value="input" form="main_form"><input type="hidden" name="rowInpt" value="2" form="main_form">');
+	$('#select_e_rules_2').append('<input type="hidden" id="empty_one" name="inputP" value="" form="main_form"><input type="hidden" id="empty_one_2" name="rowInpt" value="" form="main_form">');
+
+	document.getElementById("select_s").disabled = false;
+	document.getElementById("select_1_s").disabled = true;
+	document.getElementById("select_2_s").disabled = true;
+	document.getElementById("select_3_s").disabled = false;
+}
+if(numrelated == 2){
+
+	$('#input_param3').css("display", "flex");
+	$('#select_t').val('');
+	$('#select_1_t').val('');
+	$('#select_3_t').val('');
+	if(inputs_len == 2){
+		$('#select_e_rules_2').append('<input type="hidden" name="inputP" value="input" form="main_form"><input type="hidden" name="rowInpt" value="2" form="main_form">');
+		$('#select_e_rules_2').append('<input type="hidden" name="inputP" value="input" form="main_form"><input type="hidden" name="rowInpt" value="3" form="main_form">');
+
+	}
+	else{
+	$('#empty_one').remove();
+	$('#empty_one_2').remove();
+	$('#select_e_rules_2').append('<input type="hidden" name="inputP" value="input" form="main_form"><input type="hidden" name="rowInpt" value="3" form="main_form">');
+	}
+	document.getElementById("select_t").disabled = false;
+	document.getElementById("select_1_t").disabled = true;
+	document.getElementById("select_2_t").disabled = true;
+	document.getElementById("select_3_t").disabled = false;
+}
+
+}
+function addRuleOutput(){
+$('#select_e_rules_2').append('<input type="hidden"  name="outputs_clicked" value="0" form="main_form">');
+var max_length = document.getElementById("select_e_rules_2").getElementsByTagName("ul").length;
+var numrelated = $('#select_e_rules_2 > ul:visible').length;
+var outputs_len = {{rules_obj_out|length}}
+if(numrelated == 1){
+	$('#output_param2').css("display", "flex");
+	$('#select_6_s').val('');
+	$('#select_7_s').val('');
+	$('#select_e_rules_2').append('<input type="hidden" name="outputP" value="output" form="main_form"><input type="hidden" name="rowOtpt" value="2" form="main_form">');
+	$('#select_e_rules_2').append('<input type="hidden" id="empty_one_o" name="outputP" value="" form="main_form"><input type="hidden" id="empty_one_o_2" name="rowOtpt" value="" form="main_form">');
+	document.getElementById("select_7_s").disabled = false;
+}
+if(numrelated == 2){
+alert(outputs_len)
+	$('#output_param3').css("display", "flex");
+	$('#select_6_t').val('');
+	$('#select_7_t').val('');
+	if(outputs_len == 2){
+		$('#select_e_rules_2').append('<input type="hidden" name="outputP" value="output" form="main_form"><input type="hidden" name="rowOtpt" value="3" form="main_form">');
+		$('#select_e_rules_2').append('<input type="hidden" name="outputP" value="output" form="main_form"><input type="hidden" name="rowOtpt" value="3" form="main_form">');
+
+	}
+	else{
+	$('#empty_one_o').remove();
+	$('#empty_one_o_2').remove();
+	$('#select_e_rules_2').append('<input type="hidden" name="outputP" value="output" form="main_form"><input type="hidden" name="rowOtpt" value="3" form="main_form">');
+	}
+	document.getElementById("select_7_t").disabled = false;
+}
+}
+function showDim(){
+document.getElementById("Dname").disabled = false;
+document.getElementById("select").disabled = false;
+document.getElementById("select_1").disabled = false;
+document.getElementById("select_2").disabled = false;
+document.getElementById("select_3").disabled = false;
+document.getElementById("select_s").disabled = false;
+document.getElementById("select_1_s").disabled = false;
+document.getElementById("select_3_s").disabled = false
+document.getElementById("select_t").disabled = false;
+document.getElementById("select_1_t").disabled = false;
+document.getElementById("select_2_t").disabled = false;
+document.getElementById("select_3_t").disabled = false
+document.getElementById("select_6").disabled = false;
+document.getElementById("select_7").disabled = false;
+document.getElementById("select_6_s").disabled = false;
+document.getElementById("select_7_s").disabled = false;
+document.getElementById("select_6_t").disabled = false;
+document.getElementById("select_7_t").disabled = false;
+document.getElementById("addInputs").disabled = false;
+document.getElementById("addOutputs").disabled = false;
+}
+//First row functions to send post to view
+function funcSelect(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	dimName:$('#select').val(),
+	action: 'select',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select').val());
+console.log(data);
+$( "#input_dim" ).remove();
+$('#select_1').html('');
+//creates option tag
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_1'); //appends to select if parent div has id dropdown
+$('<input>').attr({
+    type: 'hidden',
+    id : 'input_dim',
+    name: 'input_dim',
+    value: data.var_template
+}).appendTo('#main_form');
+for(var i=0; i< data.list_var.length;i++)
+{
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var[i],
+        html: data.list_var[i]
+        }).appendTo('#select_1'); //appends to select if parent div has id dropdown
+}
+$('#select_1').attr("disabled", false);
+},
+});
+}
+
+function funcSelect_1(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	dimName_f:$('#select_1').val(),
+	action: 'select_1',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_1').val());
+console.log(data);
+$( "#input_dim_f" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id : 'input_dim_f',
+    name: 'input_dim_f',
+    value: data.field
+}).appendTo('#main_form');
+},
+});
+}
+
+function funcSelect_2(theForm){
+event.preventDefault();
+$('#select_2_s')
+    .find('option')
+    .remove()
+    .end()
+$('#select_2_t')
+    .find('option')
+    .remove()
+    .end()
+$('#select_3')
+    .find('option')
+    .remove()
+    .end()
+$('#select_3_s')
+    .find('option')
+    .remove()
+    .end()
+$('#select_3_t')
+    .find('option')
+    .remove()
+    .end()
+$('#select_5')
+    .find('option')
+    .remove()
+    .end()
+$('#select_5_s')
+    .find('option')
+    .remove()
+    .end()
+$('#select_5_t')
+    .find('option')
+    .remove()
+    .end()
+$('#select_6')
+    .find('option')
+    .remove()
+    .end()
+$('#select_6_s')
+    .find('option')
+    .remove()
+    .end()
+$('#select_6_t')
+    .find('option')
+    .remove()
+    .end()
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	mtName:$('#select_2').val(),
+	action: 'select_2',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_2').val());
+console.log(data);
+console.log(data.list_var_2);
+$( "#input_mt" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'input_mt',
+    name: 'input_mt',
+    value: data.mapping_t
+}).appendTo('#main_form');
+jQuery('<option/>', {
+        value: data.new_nm,
+        html: data.new_nm
+        }).appendTo('#select_2_s')
+jQuery('<option/>', {
+        value: data.new_nm,
+        html: data.new_nm
+        }).appendTo('#select_2_t')
+jQuery('<option/>', {
+        value: data.new_nm,
+        html: data.new_nm
+        }).appendTo('#select_5')
+jQuery('<option/>', {
+        value: data.new_nm,
+        html: data.new_nm
+        }).appendTo('#select_5_s')
+jQuery('<option/>', {
+        value: data.new_nm,
+        html: data.new_nm
+        }).appendTo('#select_5_t')
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_3')
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_3_s')
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_3_t')
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_6')
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_6_s')
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_6_t')
+for(var i=0; i< data.list_var_2.length;i++)
+{
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_3_s'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_3_t'); //appends to select if parent div has id dropdown
+
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_3'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6_s'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6_t'); //appends to select if parent div has id dropdown
+
+}
+$('#select_3').attr("disabled", false);
+$('#select_6').attr("disabled", false);
+$('#select_6_s').attr("disabled", false);
+$('#select_6_t').attr("disabled", false);
+},
+});
+}
+
+function funcSelect_3(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	mtName_f:$('#select_3').val(),
+	action: 'select_3',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_1').val());
+console.log(data);
+$( "#input_mt_f" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'input_mt_f',
+    name: 'input_mt_f',
+    value: data.field
+}).appendTo('#main_form');
+},
+});
+}
+
+//Second row functions to send post to view
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+function funcSelect_s(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	dimName:$('#select_s').val(),
+	action: 'select_s',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_s').val());
+console.log(data);
+$( "#input_dim_s" ).remove();
+$('#select_1_s').html('');
+//creates option tag
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_1_s'); //appends to select if parent div has id dropdown
+$('<input>').attr({
+    type: 'hidden',
+    id : 'input_dim_s',
+    name: 'input_dim_s',
+    value: data.var_template
+}).appendTo('#main_form');
+for(var i=0; i< data.list_var.length;i++)
+{
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var[i],
+        html: data.list_var[i]
+        }).appendTo('#select_1_s'); //appends to select if parent div has id dropdown
+}
+$('#select_1_s').attr("disabled", false);
+},
+});
+}
+///////////////////////////////////////////////////
+function funcSelect_1_s(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	dimName_f:$('#select_1_s').val(),
+	action: 'select_1_s',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_1_s').val());
+console.log(data);
+$( "#input_dim_f_s" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id : 'input_dim_f_s',
+    name: 'input_dim_f_s',
+    value: data.field
+}).appendTo('#main_form');
+},
+});
+}
+
+function funcSelect_2_s(theForm){
+event.preventDefault();
+$('#select_3_s')
+    .find('option')
+    .remove()
+    .end()
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	mtName:$('#select_2_s').val(),
+	action: 'select_2_s',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_2_s').val());
+console.log(data);
+console.log(data.list_var_2);
+$( "#input_mt_s" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'input_mt_s',
+    name: 'input_mt_s',
+    value: data.mapping_t
+}).appendTo('#main_form');
+
+jQuery('<option/>', {
+        value: data.mapping_t,
+        html: data.mapping_t
+        }).appendTo('#select_5_s')
+jQuery('<option/>', {
+        value: data.mapping_t,
+        html: data.mapping_t
+        }).appendTo('#select_5_t')
+for(var i=0; i< data.list_var_2.length;i++)
+{
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_3'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6_s'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6_t'); //appends to select if parent div has id dropdown
+}
+$('#select_3').attr("disabled", false);
+$('#select_6').attr("disabled", false);
+},
+});
+}
+
+function funcSelect_3_s(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	mtName_f:$('#select_3_s').val(),
+	action: 'select_3_s',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_1_s').val());
+console.log(data);
+$( "#input_mt_f_s" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'input_mt_f_s',
+    name: 'input_mt_f_s',
+    value: data.field
+}).appendTo('#main_form');
+},
+});
+}
+
+//Third row functions to send post to view
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+function funcSelect_t(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	dimName:$('#select_t').val(),
+	action: 'select_t',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_t').val());
+console.log(data);
+$( "#input_dim_t" ).remove();
+$('#select_1_t').html('');
+//creates option tag
+  jQuery('<option/>', {
+        value: '',
+        html: ''
+        }).appendTo('#select_1_t'); //appends to select if parent div has id dropdown
+$('<input>').attr({
+    type: 'hidden',
+    id : 'input_dim_t',
+    name: 'input_dim_t',
+    value: data.var_template
+}).appendTo('#main_form');
+for(var i=0; i< data.list_var.length;i++)
+{
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var[i],
+        html: data.list_var[i]
+        }).appendTo('#select_1_t'); //appends to select if parent div has id dropdown
+}
+$('#select_1_t').attr("disabled", false);
+},
+});
+}
+///////////////////////////////////////////////////
+function funcSelect_1_t(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	dimName_f:$('#select_1_t').val(),
+	action: 'select_1_t',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_1_t').val());
+console.log(data);
+$( "#input_dim_f_t" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id : 'input_dim_f_t',
+    name: 'input_dim_f_t',
+    value: data.field
+}).appendTo('#main_form');
+},
+});
+}
+
+function funcSelect_2_s(theForm){
+event.preventDefault();
+$('#select_3_t')
+    .find('option')
+    .remove()
+    .end()
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	mtName:$('#select_2_t').val(),
+	action: 'select_2_t',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_2_t').val());
+console.log(data);
+console.log(data.list_var_2);
+$( "#input_mt_t" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'input_mt_t',
+    name: 'input_mt_t',
+    value: data.mapping_t
+}).appendTo('#main_form');
+
+jQuery('<option/>', {
+        value: data.mapping_t,
+        html: data.mapping_t
+        }).appendTo('#select_5_t')
+jQuery('<option/>', {
+        value: data.mapping_t,
+        html: data.mapping_t
+        }).appendTo('#select_5_t')
+for(var i=0; i< data.list_var_2.length;i++)
+{
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_3_t'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6_s'); //appends to select if parent div has id dropdown
+//creates option tag
+  jQuery('<option/>', {
+        value: data.list_var_2[i],
+        html: data.list_var_2[i]
+        }).appendTo('#select_6_t'); //appends to select if parent div has id dropdown
+}
+$('#select_3_t').attr("disabled", false);
+$('#select_6_t').attr("disabled", false);
+},
+});
+}
+
+function funcSelect_3_t(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	mtName_f:$('#select_3_t').val(),
+	action: 'select_3_t',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_1_t').val());
+console.log(data);
+$( "#input_mt_f_t" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'input_mt_f_t',
+    name: 'input_mt_f_t',
+    value: data.field
+}).appendTo('#main_form');
+},
+});
+}
+//First row output parameter///////////////////////////////////////////////////////////////////////////////////////
+function funcSelect_6(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	output_f:$('#select_6').val(),
+	action: 'select_6',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_6').val());
+console.log(data);
+$( "#output_f" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'output_f',
+    name: 'output_f',
+    value: data.output_f
+}).appendTo('#main_form');
+},
+});
+}
+
+function funcSelect_7(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	target_d:$('#select_7').val(),
+	action: 'select_7',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_7').val());
+console.log(data);
+$( "#target_d" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'target_d',
+    name: 'target_d',
+    value: data.target_d
+}).appendTo('#main_form');
+},
+});
+}
+//Second row output parameter///////////////////////////////////////////////////////////////////////////////////////
+function funcSelect_6_s(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	output_f:$('#select_6_s').val(),
+	action: 'select_6_s',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_6_s').val());
+console.log(data);
+$( "#output_f_s" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'output_f_s',
+    name: 'output_f_s',
+    value: data.output_f
+}).appendTo('#main_form');
+},
+});
+}
+
+function funcSelect_7_s(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	target_d:$('#select_7_s').val(),
+	action: 'select_7_s',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_7_s').val());
+console.log(data);
+$( "#target_d_s" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'target_d_s',
+    name: 'target_d_s',
+    value: data.target_d
+}).appendTo('#main_form');
+},
+});
+}
+//Third row output parameter///////////////////////////////////////////////////////////////////////////////////////
+function funcSelect_6_t(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	output_f:$('#select_6_t').val(),
+	action: 'select_6_t',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_6_t').val());
+console.log(data);
+$( "#output_f_t" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'output_f_t',
+    name: 'output_f_t',
+    value: data.output_f
+}).appendTo('#main_form');
+},
+});
+}
+
+function funcSelect_7_t(theForm){
+event.preventDefault();
+$.ajax({
+	method:'POST',
+	url:"{% url 'brows_d_mrules' %}",
+	data:{
+	target_d:$('#select_7_t').val(),
+	action: 'select_7_t',
+	csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+},
+success: function(data) {
+console.log($('#select_7_t').val());
+console.log(data);
+$( "#target_d_t" ).remove();
+$('<input>').attr({
+    type: 'hidden',
+    id: 'target_d_t',
+    name: 'target_d_t',
+    value: data.target_d
+}).appendTo('#main_form');
+},
+});
+}
+</script>
+<br>
+<br>
+ <div class="container">
+  <div class="main_btn">
+	 <button class="btn" type="submit" form="none"><a href="{% url 'import_f'%}">Import Files</a></button>
+	  <button class="btn" type="submit" form="none"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit" form="none" id="active"><a href="#">Mapping Data</a></button>
+    <button class="btn" type="submit" form="none"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit" form="none"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" form="none" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+		<li><button class="btn" type="submit" form="none"><a href="{% url 'mapping_data'%}">Browse/Define Mapping Table</a></button></li>
+	  	<li><button class="btn" type="submit" form="none"><a href="{% url 'import_mt'%}">Import Mapping Data</a></button></li>
+        <li><button class="btn" type="submit" form="none"><a href="{% url 'brows_mapping_t'%}">Browse/Define Mapping Data</a></button></li>
+		<li><button class="btn" type="submit" form="none" id="active_1"><a href="{% url 'brows_d_mrules'%}">Browse/Define Mapping Rules</a></button></li>
+		<li><button class="btn" type="submit" form="none"><a href="{% url 'brows_d_msets'%}">Browse/Define Mapping Sets</a></button></li>
+      </ul>
+         </div>
+         {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+{% endif %}
+	  </div>
+    <div class="col-md-7" id="col_7">
+		<h2 id="h2" {% if rules|length > 0 or rule_name != ''%}style="display:none;"{% endif %}>Please Create new Rule</h2>
+		<h2 {% if rule_name == '' and rules|length  > 0 %}{% else %}style="display:none;"{% endif %}>Choose one of Mapping Rules or create new one</h2>
+		<div id="all_forms" {% if rule_name == 'New Rule'%}style="display:block;"{% elif rules|length < 1 or rule_name == ''%}style="display:none;"{% endif %}>
+
+		<form method="post" id="main_form" >
+			{% for item in rules_obj%}
+			{% with rules_obj|select_item:forloop.counter0 as another_item %}
+            <input type="hidden" name="list_inputs" value="{{another_item.type}}">
+			<input type="hidden" name="list_row_in" value="{{another_item.row}}">
+			{% endwith %}
+			{% endfor %}
+			{% for item in rules_obj_out%}
+			{% with rules_obj_out|select_item:forloop.counter0 as another_item %}
+            <input type="hidden" name="list_outpts" value="{{another_item.type}}">
+			<input type="hidden" name="list_row_out" value="{{another_item.row}}">
+			{% endwith %}
+			{% endfor %}
+		<form id="my-form" method="POST" action="" >{% csrf_token %}
+			<input type="hidden" id="rule_name" name="rule_name" value="{{rule_name}}">
+		 <div  class="dim_name" id="dim_name" {% if rule_name == ''%} style="display:none;"{% endif %}
+		 										{% if messages %}style="display:none;"{% endif %}>
+  <label for="Dname">Mapping Rule Name:</label><br>
+  <input type="text" id="Dname" name="Dname"  {% if rule_name == '' %}value="" {% else %}value="{{ rule_name }}"{% endif%}
+			{% if rule_name != 'New Rule' %}disabled{% endif %} >
+				  <div class="dim_action">
+	<button class="btn"  type="submit" id="change_dimension" form="none" onclick="showDim()">Change</button>
+    <button class="btn"  type="submit" id="delete" name="delete"  form="main_form" value="" onclick="return confirm('Are you sure you wannt to delete?')">Delete</button>
+	<button class="btn"  type="submit" id="save" name="save"  form="main_form" value="" onclick="return confirm('Are you sure you wannt to save?')">Save</button>
+    <button class="btn"  type="submit" id="apply" name="apply"  form="main_form" value="" onclick="return confirm('Are you sure you wannt to apply changes?')">Apply</button>
+          </div>
+		</div>
+		</form><br>
+	  <h6>Input Parameter:</h6>
+		<div id="select_e_rules">
+
+			<input type="hidden" name="inputP" value="input" form="main_form">
+			<input type="hidden" name="rowInpt" value="1" form="main_form">
+	<ul id="input_param" {% if rules_obj|length < 1 %}style="display:none;"{% endif %}>
+	<ol><label for="select">Dimension</label><br>
+     <form method="post" class="form_rules" id="form_select_d" >{% csrf_token %}
+	<select id="select" name='select' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %}
+			onchange="funcSelect(form_select_d)">
+		<option></option>
+		{% for item in obj %}
+				 {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+
+				{% else %}
+
+		<option id="{{ item.id}}" value="{{ item.dimensionName }}"
+				{% with forloop.counter0 as counter  %}
+				{% if rules_obj.0.dimensionName.dimensionName == item.dimensionName %}
+					selected
+				{% endif %}{% endwith %}
+				>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != 'None' %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		{% endif %}
+
+		{% endfor %}
+
+	</select>
+		 </form>
+	</ol>
+	<ol><label for="Dname">Field:</label>
+	<form method="post" id="form_select_field">{% csrf_token %}
+
+	<select id="select_1" name="select_1" disabled onchange="funcSelect_1(form_select_field)">
+
+		<option></option>
+		{% for item in list_var%}
+        {% if item == 'code'%}
+		<option {% if item == rules_obj.0.dimField  %}
+					selected
+				{% endif %}>{{item}}</option>
+        {% endif %}
+		{% endfor %}
+	</select>
+	 </form>
+		</ol>
+		<ol><label for="select_2">Mapping Table:</label><br>
+	<form method="post" class="form_rules_1" id="form_select_m">{% csrf_token %}
+		<select id="select_2" name='select_2' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onchange="funcSelect_2(form_select_m)">
+
+			<option></option>
+			{% for item in obj_1 %}
+					 {% if item.new_name != None %}
+						<option id="{{ item.id }}"  name="{{ item.name }}" value="{{ item.name }}"
+								{% if rules_obj.0.mtName.name == item.name %}
+									selected
+								{% endif %}>
+																						{% if item.new_name != None %}
+																							{{ item.new_name }}
+																						{% else %}
+																							{{ item.name }}
+																						{% endif %}</option>
+					 {% endif %}
+			{% endfor %}
+		</select>
+		</form>
+		</ol>
+		<ol><label for="Dname">Field:</label>
+	<form method="post" class="form_rules_1" id="form_select_m_f">{% csrf_token %}
+			<select id="select_3" name="select_3" disabled onchange="funcSelect_3(form_select_m_f)">
+				<option></option>
+		{% for item in list_var_2%}
+		<option {% if item ==  rules_obj.0.mtField  %}
+									selected
+								{% endif %}>{{item}}</option>
+		{% endfor %}
+		</select>
+
+  		</form>
+			</ol>
+
+	  </ul>
+
+	  <!---Secon Row------------------------------------------------------------------------------------->
+	<ul id="input_param2" {% if rules_obj|length < 2 %}style="display:none;"{% endif %}>
+	<ol><label for="select">Dimension</label><br>
+     <form method="post" class="form_rules" id="form_select_d_s" >{% csrf_token %}
+	<select id="select_s" name='select' disabled
+			onchange="funcSelect_s(form_select_d)">
+		<option></option>
+		{% for item in obj %}
+				 {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+
+				{% else %}
+
+		<option id="{{ item.id}}" value="{{ item.dimensionName }}"
+				{% if rules_obj.1.dimensionName.dimensionName == item.dimensionName %}
+					selected
+				{% endif %}>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != 'None' %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		{% endif %}
+
+		{% endfor %}
+	</select>
+		 </form>
+	</ol>
+	<ol><label for="Dname">Field:</label>
+	<form method="post" id="form_select_field_s">{% csrf_token %}
+
+	<select id="select_1_s" name="select_1_s" disabled onchange="funcSelect_1_s(form_select_field)">
+
+		<option></option>
+		{% for item in list_var%}
+        {% if item == 'code'%}
+		<option {% if item == rules_obj.1.dimField  %}
+					selected
+				{% endif %}>{{item}}</option>
+        {% endif %}
+		{% endfor %}
+	</select>
+	 </form>
+		</ol>
+		<ol><label for="select_2">Mapping Table:</label><br>
+	<form method="post" class="form_rules_1" id="form_select_m_s">{% csrf_token %}
+		<select id="select_2_s" name='select_2' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onchange="funcSelect_2_s(form_select_m)">
+
+			<option></option>
+			{% for item in obj_1 %}
+					 {% if item.new_name != None %}
+						<option id="{{ item.id }}"  name="{{ item.name }}" value="{{ item.name }}"
+								{% if rules_obj.0.mtName.name == item.name %}
+									selected
+								{% endif %}>
+
+																							{{ item.new_name }}
+
+
+																						</option>
+					 {% endif %}
+			{% endfor %}
+		</select>
+		</form>
+		</ol>
+		<ol><label for="Dname">Field:</label>
+	<form method="post" class="form_rules_1" id="form_select_m_f_s">{% csrf_token %}
+			<select id="select_3_s" name="select_3" disabled onchange="funcSelect_3_s(form_select_m_f)">
+				<option></option>
+		{% for item in list_var_2%}
+		<option {% if item ==  rules_obj.1.mtField  %}
+									selected
+								{% endif %}>{{item}}</option>
+		{% endfor %}
+		</select>
+
+  		</form>
+			</ol>
+
+	  </ul>
+
+
+
+	  <!---Third Row------------------------------------------------------------------------------------->
+	<ul id="input_param3" {% if rules_obj|length != 3 %}style="display:none;"{% endif %}>
+	<ol><label for="select">Dimension</label><br>
+     <form method="post" class="form_rules" id="form_select_d_t" >{% csrf_token %}
+	<select id="select_t" name='select' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %}
+			onchange="funcSelect_t(form_select_d)">
+		<option></option>
+		{% for item in obj %}
+				 {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+
+				{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+
+				{% else %}
+
+		<option id="{{ item.id}}" value="{{ item.dimensionName }}"
+				{% with forloop.counter0 as counter  %}
+				{% if rules_obj.2.dimensionName.dimensionName == item.dimensionName %}
+					selected
+				{% endif %}{% endwith %}
+				>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != 'None' %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		{% endif %}
+
+		{% endfor %}
+	</select>
+		 </form>
+	</ol>
+	<ol><label for="Dname">Field:</label>
+	<form method="post" id="form_select_field_t">{% csrf_token %}
+
+	<select id="select_1_t" name="select_1" disabled onchange="funcSelect_1_t(form_select_field)">
+
+		<option></option>
+		{% for item in list_var%}
+        {% if item == 'code'%}
+		<option {% if item == rules_obj.2.dimField  %}
+					selected
+				{% endif %}>{{item}}</option>
+        {% endif %}
+		{% endfor %}
+	</select>
+	 </form>
+		</ol>
+		<ol><label for="select_2">Mapping Table:</label><br>
+	<form method="post" class="form_rules_1" id="form_select_m_t">{% csrf_token %}
+		<select id="select_2_t" name='select_2' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onchange="funcSelect_2_t(form_select_m)">
+
+			<option></option>
+			{% for item in obj_1 %}
+					 {% if item.new_name != None %}
+						<option id="{{ item.id }}"  name="{{ item.name }}" value="{{ item.name }}"
+								{% if rules_obj.0.mtName.name == item.name %}
+									selected
+								{% endif %}>
+																						{% if item.new_name != None %}
+																							{{ item.new_name }}
+																						{% else %}
+																							{{ item.name }}
+																						{% endif %}</option>
+					 {% endif %}
+			{% endfor %}
+		</select>
+		</form>
+		</ol>
+		<ol><label for="Dname">Field:</label>
+	<form method="post" class="form_rules_1" id="form_select_m_f_t">{% csrf_token %}
+			<select id="select_3_t" name="select_3" disabled onchange="funcSelect_3_t(form_select_m_f)">
+				<option></option>
+		{% for item in list_var_2%}
+		<option {% if item ==  rules_obj.2.mtField  %}
+									selected
+								{% endif %}>{{item}}</option>
+		{% endfor %}
+		</select>
+
+  		</form>
+			</ol>
+
+	  </ul>
+
+
+			</div><br>
+	  <button class="btn"id="addInputs" type="submit" name="add_rule" form="none" {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onclick="addRuleInputs()">add</button><br>
+	  <!-------------First row outputs--------------------------------------------------------------------------->
+		<h6>Output Parameter:</h6><br>
+	   <div id="select_e_rules_2" >
+			<input type="hidden" name="outputP" value="output" form="main_form">
+		   <input type="hidden" name="rowOtpt" value="1" form="main_form">
+	  	<ul id="output_param" {% if rules_obj_out|length < 1 %}style="display:none;"{% endif %}>
+		<ol><label for="select_2">Mapping Table:</label><br>
+	<form method="post" class="form_rules_1" id="form_select_m_dublicate">{% csrf_token %}
+		<select id="select_5" name='select_5' disabled>
+            <option></option>
+            {% for item in obj_1 %}
+					 {% if item.new_name != None %}
+						<option id="{{ item.id }}"  name="{{ item.name }}" value="{{ item.name }}"
+								{% if rules_obj_out.0.mtName.name == item.name %}
+									selected
+								{% endif %}>
+																						{% if item.new_name != None %}
+																							{{ item.new_name }}
+																						{% else %}
+																							{{ item.name }}
+																						{% endif %}</option>
+					 {% endif %}
+			{% endfor %}
+		</select>
+		</form>
+		</ol>
+		<ol><label for="Dname">Field:</label>
+	<form method="post" id="form_select_6">{% csrf_token %}
+			<select id="select_6" name="select_6"disabled onchange="funcSelect_6(form_select_6)">
+				<option></option>
+		{% for item in list_var_2%}
+		<option {% if item ==  rules_obj_out.0.mtField  %}
+									selected
+								{% endif %}>{{item}}</option>
+		{% endfor %}
+		</select>
+
+  		</form>
+			</ol>
+		<ol><label for="form_output_f_1" hidden></label><form id="form_output_f_1" ><select hidden></select></form></ol>
+
+		<ol><label for="select_7">Target Dimmension:</label><input type="hidden" id="form_post" value="select_7" ><form method="POST" id="post_form">{% csrf_token %}
+			<select id="select_7" name='select_7' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onchange="funcSelect_7(post_form)">
+
+		<option></option>
+		{% for item in obj %} }
+				 {% if item.dimensionName != 'Custom 1' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 2' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 3' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 4' and item.new_name == None %}
+				{% else %}
+		<option id="{{ item.id}}" value="{{ item.dimensionName }}"
+				{% if item.dimensionName ==  rules_obj_out.0.dimensionName.dimensionName  %}
+									selected
+								{% endif %}>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		{% endif %}
+		{% endfor %}
+	</select>
+		</form></ol>
+		</ul>
+
+	<!----------------------------------Second row outputs------------------------------------------------------------->
+
+	  	<ul id="output_param2" {% if rules_obj_out|length < 2 %}style="display:none;"{% endif %}>
+		<ol><label for="select_2">Mapping Table:</label><br>
+	<form method="post" class="form_rules_1" id="form_select_m_dublicate_s">{% csrf_token %}
+		<select id="select_5_s" name='select_5' disabled>
+            <option></option>
+
+            {% for item in obj_1 %}
+					 {% if item.new_name != None %}
+						<option id="{{ item.id }}"  name="{{ item.name }}" value="{{ item.name }}"
+								{% if rules_obj_out.0.mtName.name == item.name %}
+									selected
+								{% endif %}>
+																						{% if item.new_name != None %}
+																							{{ item.new_name }}
+																						{% else %}
+																							{{ item.name }}
+																						{% endif %}</option>
+					 {% endif %}
+			{% endfor %}
+		</select>
+		</form>
+		</ol>
+		<ol><label for="Dname">Field:</label>
+	<form method="post" id="form_select_6_s">{% csrf_token %}
+			<select id="select_6_s" name="select_6"disabled onchange="funcSelect_6_s(form_select_6)">
+				<option></option>
+		{% for item in list_var_2%}
+		<option {% if item ==  rules_obj_out.1.mtField  %}
+									selected
+								{% endif %}>{{item}}</option>
+		{% endfor %}
+		</select>
+
+  		</form>
+			</ol>
+		<ol><label for="form_output_f_1" hidden></label><form id="form_output_f_1_s" ><select hidden></select></form></ol>
+
+		<ol><label for="select_7">Target Dimmension:</label><input type="hidden" id="form_post_s" value="select_7" ><form method="POST" id="post_form_s">{% csrf_token %}
+			<select id="select_7_s" name='select_7' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onchange="funcSelect_7_s(post_form)">
+
+		<option></option>
+		{% for item in obj %} }
+				 {% if item.dimensionName != 'Custom 1' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 2' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 3' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 4' and item.new_name == None %}
+
+				{% else %}
+		<option id="{{ item.id}}" value="{{ item.dimensionName }}"
+				{% if item.dimensionName ==  rules_obj_out.1.dimensionName.dimensionName  %}
+									selected
+								{% endif %}>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		{% endif %}
+		{% endfor %}
+	</select>
+		</form></ol>
+		</ul>
+
+
+
+
+<!----------------------------------Third row outputs------------------------------------------------------------->
+
+	  	<ul id="output_param3" {% if rules_obj_out|length < 3 %}style="display:none;"{% endif %}>
+		<ol><label for="select_2">Mapping Table:</label><br>
+	<form method="post" class="form_rules_1" id="form_select_m_dublicate_t">{% csrf_token %}
+		<select id="select_5_t" name='select_5' disabled>
+            <option></option>
+            {% for item in obj_1 %}
+					 {% if item.new_name != None %}
+						<option id="{{ item.id }}"  name="{{ item.name }}" value="{{ item.name }}"
+								{% if rules_obj_out.0.mtName.name == item.name %}
+									selected
+								{% endif %}>
+																						{% if item.new_name != None %}
+																							{{ item.new_name }}
+																						{% else %}
+																							{{ item.name }}
+																						{% endif %}</option>
+					 {% endif %}
+			{% endfor %}
+		</select>
+		</form>
+		</ol>
+
+		<ol><label for="Dname">Field:</label>
+	<form method="post" id="form_select_6_t">{% csrf_token %}
+			<select id="select_6_t" name="select_6" disabled onchange="funcSelect_6_t(form_select_6)">
+				<option></option>
+		{% for item in list_var_2%}
+		<option {% if item ==   rules_obj_out.2.mtField  %}
+									selected
+								{% endif %}>{{item}}</option>
+		{% endfor %}
+		</select>
+
+  		</form>
+			</ol>
+		<ol><label for="form_output_f_1" hidden></label><form id="form_output_f_1_t" ><select hidden></select></form></ol>
+
+		<ol><label for="select_7_t">Target Dimmension:</label><input type="hidden" id="form_post_t" value="select_7" ><form method="POST" id="post_form_t">{% csrf_token %}
+			<select id="select_7_t" name='select_7' {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onchange="funcSelect_7_t(post_form)">
+
+		<option></option>
+		{% for item in obj %} }
+				 {% if item.dimensionName != 'Custom 1' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 2' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 3' and item.new_name == None %}
+
+				{% elif item.dimensionName != 'Custom 4' and item.new_name == None %}
+
+				{% else %}
+		<option id="{{ item.id}}" value="{{ item.dimensionName }}"
+				{% if item.dimensionName ==  rules_obj_out.2.dimensionName.dimensionName  %}
+									selected
+								{% endif %}>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		{% endif %}
+		{% endfor %}
+	</select>
+		</form></ol>
+		</ul>
+
+	  </div>
+	  </form>
+
+	<button class="btn" id="addOutputs" type="submit"  form="none" {% if rule_name != ''%}{% if rule_name != 'New Rule' %}disabled{% endif %}{% endif %} onclick="addRuleOutput()">add</button>
+	  </div>
+</div>
+
+
+    <div class="col-md-2" id="rule_list">
+		<div class="rules_list">
+			<ul id="ul_rules">
+                <form method="post" id="rules_list_form">{% csrf_token %}
+				{% for item in rules %}
+				<ol><input class="btn" type="submit" name="rule_submit" form="rules_list_form" value="{{item.ruleName}}"></ol>
+				{% endfor %}
+                </form>
+			</ul>
+			<button class="btn" type="submit" name="add_rule" form="rules_list_form" onclick="addRule()">add</button>
+		</div>
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+ </div>
+{% endblock %}
+

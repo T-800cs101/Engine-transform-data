@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function addRule(){
+var max_length = document.getElementById("select_sets").getElementsByTagName("ol").length;
+
+ if(max_length < 3){
+ $("#ul_rules").append('<ol><select name="select" ><option></option>{% for item in rules %}<option value="{{ item.ruleName}}">{{ item.ruleName}}</option>{% endfor %}</select></ol>');
+   // $("#ul_rules").append('<ol><select id="select_rules" name="select"><option></option>{% if if_new_set == "New" %}{% for item in reslt_list %}<option value="{{ item}}" {% if item_1 == item%}selected{% endif %} >{{ item}}</option>{% endfor %}{% else %}{% for item in rules %}<option value="{{ item.ruleName}}" {% if item_1 == item.ruleName%}selected{% endif %} >{{ item.ruleName}}</option>{% endfor %}{% endif %}</select></ol>');
+}
+else{
+	alert("You reached MAX number of rules in set")
+}
+ }
+ function showDim(){
+ 	document.getElementById("Dname").disabled = false;
+ 	//document.getElementById("ul_rules").disabled = false;
+ 	//("select_rules").attr('disabled', false);
+ 	$("#ul_rules ol select").attr('disabled', false);
+ 	$("#add_btn").attr('disabled', false);
+
+ }
+$(document).ready(function(){
+    rule_name = $('#rule_name').val();
+    if(rule_name != ''){
+    	if(rule_name == 'New Rule'){
+			$('#apply').css("display", "none");
+         }
+         else{
+          	$('#save').css("display", "none");
+         }
+
+    }
+    else{
+        $('#apply').css("display", "none");
+        $('#apply').attr("disabled", "true");
+    }
+
+});
+</script>
+<br>
+<br>
+ <div class="container">
+	 <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+	 <button class="btn" type="submit"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit" id="active"><a href="#">Mapping Data</a></button>
+    <button class="btn" type="submit"  ><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+	  	<li><button class="btn" type="submit"><a href="{% url 'mapping_data'%}">Browse/Define Mapping Table</a></button></li>
+	  	<li><button class="btn" type="submit" ><a href="{% url 'import_mt'%}">Import Mapping Data</a></button></li>
+        <li><button class="btn" type="submit"><a href="{% url 'brows_mapping_t'%}">Browse/Define Mapping Data</a></button></li>
+		<li><button class="btn" type="submit"><a href="{% url 'brows_d_mrules'%}">Browse/Define Mapping Rules</a></button></li>
+		<li><button class="btn" type="submit" id="active_1"><a href="{% url 'brows_d_msets'%}">Browse/Define Mapping Sets</a></button></li>
+      </ul>
+         </div>
+		 {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+{% endif %}
+	  </div>
+    <div class="col-md-7">
+		<h2 id="h2" {% if rules|length > 0 or rule_name == ''%}style="display:none;"{% endif %}>Please Create new Set</h2>
+		<h2 {% if set_obj == '' and rules|length  > 0 %}{% else %}style="display:none;"{% endif %}>Choose one of Mapping Sets or create new one</h2>
+		<form method="post" id="main_form" >
+			<input type="hidden" id="rule_name" name="rule_name" value="{{rule_name}}">
+			<input type="hidden" id="set_obj" name="set_obj" value="{{set_obj}}">
+            <input type="hidden" id="if_new_set" name="if_new_set" value="{{if_new_set}}">
+
+		 <div  class="dim_name" id="dim_name" {% if set_obj == '' %}style="display:none;"{% endif %}
+		 										{% if messages %}style="display:none;"{% endif %}>
+  <label for="Dname">Mapping Set Name:</label><br>
+  <input type="text" id="Dname" name="Dname"  {% if rule_name == '' %}value="" {% else %}value="{{ set_obj }}"{% endif%}
+			{% if set_obj != 'New rule Set' %}disabled{% endif %} >
+				  <div class="dim_action">
+	<button class="btn"  type="submit" id="change_dimension" form="none" onclick="showDim()">Change</button>
+    <button class="btn"  type="submit" id="delete" name="delete"  form="main_form" value="" onclick="return confirm('Are you sure you wannt to delete?')">Delete</button>
+	<button class="btn"  type="submit" id="save" name="save"  form="main_form" value="" onclick="return confirm('Are you sure you wannt to save?')">Save</button>
+    <button class="btn"  type="submit" id="apply" name="apply"  form="main_form" value="" onclick="return confirm('Are you sure you wannt to apply changes?')">Apply</button>
+          </div>
+		</div><br>
+		 <div id="select_sets">
+			  <form class="form_sets" id="form_sets" method="post">{% csrf_token %}
+  <ul id="ul_rules">
+	{% for item_1 in list_final %}
+	<ol>
+	<select id="select_rules" name="select" disabled>
+			<option></option>
+
+        {% for item in rules %}
+			<option value="{{ item.ruleName}}" {% if item_1 == item.ruleName %}selected{% endif %} >{{ item.ruleName }}</option>
+        {% endfor %}
+
+	</select>
+	</ol>
+	{% endfor %}
+	  <button class="btn" id="add_btn" type="submit" form="none"  onclick="addRule()" {% if set_obj == '' %}style="display:none;"{% endif %}
+	  																			 {% if set_obj == 'New rule Set' %}{% else %}disabled{%endif%} >add</button>
+	  </ul>
+
+  </form>
+</div>
+  </div>
+
+    <div class="col-md-2" id="rule_list">
+		<div class="rules_list">
+			<ul id="ul_sets">
+                <form method="post" id="sets_list_form">{% csrf_token %}
+				{% for item in sets %}
+				<ol><input class="btn" type="submit" name="set_submit" form="sets_list_form" value="{{item.setName}}"></ol>
+				{% endfor %}
+                </form>
+			</ul>
+			<button class="btn" type="submit" name="add_set" form="sets_list_form" onclick="addSet()">add</button>
+		</div>
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+ 
+
+
+</div>
+{% endblock %}

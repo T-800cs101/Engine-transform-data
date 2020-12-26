@@ -1,0 +1,68 @@
+{% load static %}<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}ETL-Tool{% endblock %}</title>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block stylesheet %}{% endblock %}  <!-- HERE -->
+      {% block script %}
+      <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/jquery.js' %}"></script>
+
+        <script src="{% static 'js/ajax.js' %}"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      {% endblock %}
+  </head>
+  <body>
+        {% block body %}  <!-- HERE -->
+        <nav class="navbar navbar-expand-sm navbar-light" style="background-color: #ffffff;">
+            <div class="container">
+                <a class="navbar-brand" href="#"><img src="/static/img/logo-menu.png" alt="" width=auto height="33"></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                <div class="collapse navbar-collapse" id="mainMenu">
+                        {% block logout %}
+                        {% endblock logout %}
+
+
+                </div>
+            </div>
+        </nav>
+
+ <div class="container" >
+              <ol class="breadcrumb my-4">
+                {% block breadcrumb %}
+                {% endblock %}
+              </ol>
+ </div>
+        <div class="container" id="main_container">
+              {% block content %}
+              {% endblock %}
+            </div>
+        {% endblock body %}  <!-- AND HERE -->
+        </body>
+        {% block footer %}
+        <footer id="footer">
+            <div class="container">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                     <li class="breadcrumb-item active" aria-current="page"></li>
+                </ol>
+            </nav>
+            </div>
+            <p><b>Copyright&copy;2020</b>Gregori Povolotski</b></p>
+
+        </footer>
+        {% endblock footer%}
+            <script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+
+
+</html>

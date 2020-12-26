@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script>
+	function toggle(source) {
+  checkboxes = document.getElementsByName('check');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+	function enable_form(){
+		document.getElementById("import_f").style.display = 'block';
+	}
+
+
+
+
+
+function showLoading() {
+    document.getElementById('loader').style.display = 'block';
+    $("#main_content").css("display","none");
+    $("#jumbotron_content").css("display","none");
+    $("#logout_btn").attr("disabled","true");
+}
+function showLoading_1() {
+    document.getElementById('loader_2').style.display = 'block';
+    $("#main_content").css("display","none");
+    $("#jumbotron_content").css("display","none");
+    $("#logout_btn").attr("disabled","true");
+}
+document.onreadystatechange = function() {
+            if (document.readyState !== "complete") {
+                document.querySelector(
+                  "body").style.visibility = "hidden";
+                document.querySelector(
+                  "#loader").style.visibility = "visible";
+
+            } else {
+                document.querySelector(
+                  "#loader").style.display = "none";
+
+                document.querySelector(
+                  "body").style.visibility = "visible";
+            }
+        };
+
+</script>
+<style>
+		#loader_2{
+			display:none;
+		}
+        #loader,
+         #loader_2{
+            border: 12px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 12px solid #D54519;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+            z-index: 999;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .center {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+    </style>
+<br>
+<br>
+
+<div id="loader" class="center"></div>
+
+<div id="loader_2" class="center"></div>
+ <div class="container" id="main_content">
+	<div class="main_btn">
+	 <button class="btn" type="submit" id="active"><a href="{% url 'import_f'%}">Import Files</a></button>
+		<button class="btn" type="submit"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit"><a href="{% url 'mapping_data'%}">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+
+<h1>Finatycs</h1>
+
+	 <div class="container">
+	<div class="row" id="select_e_p">
+		<div class="col-4">
+			<form method="POST" id="file_form" action="" enctype="multipart/form-data" onsubmit="showLoading();">
+			{% csrf_token %}
+				<label for="sel_event" id="md_label_1">Event:</label>
+				<label for="sel_event" id="md_label_2">Period:</label>
+			<ul>
+
+
+				<ol>
+
+				<select id="sel_event" name="sel_event" required {% if df_head|length > 0 %}disabled{% endif %}>
+					<option></option>
+                    {% for item in event %}
+					<option>{{item.short_descr}}</option>
+					{% endfor %}
+	    		</select>
+
+				</ol>
+				<ol>
+
+        		<select id="sel_period" name="sel_period" required {% if df_head|length > 0 %}disabled{% endif %}>
+					<option></option>
+                    {% for item in period %}
+					<option>{{item.short_descr}}</option>
+					{% endfor %}
+				</select>
+				</ol>
+			</ul>
+			<br>
+			<label >Comment:</label><br>
+			<textarea  id="Dname_comment" rows="2" cols="31" name="comment" value="comment" maxlength="255" {% if df_head|length > 0 %}disabled{% endif %}></textarea><br>
+
+		<input type="file" id="file" name="test" value="test" {% if df_head|length > 0 %}disabled{% endif %}><br>
+		<label>Sheet Name:</label><br>
+		<input type="text" id="sheet_name" name="sheet_name" required {% if df_head|length > 0 %}disabled{% endif %} ><br>
+		<button class="btn" id="btn_imprt_importF" form="file_form" name="import_f" type="submit" value="import" {% if df_head|length > 0 %}disabled{% endif %} onclick="return confirm('Are you sure? If selected event and period are exist in System, than old data will be overwritten')">Submit</button>
+	</form>
+			</div>
+			<div class="col-8">
+				<ul class="messages">
+				{% for message in messages %}
+				<ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+				{% endfor %}
+				</ul>
+				<form id="log_table" method="POST" action="">
+					{% csrf_token %}
+	 			<button class="btn" id="btn_dlt_importF" type="submit" name="delete_log" form="log_table" onclick="return confirm('Are you sure?')" {% if df_head|length > 0 %}disabled{% endif %}>Delete</button>
+
+				<br><br>
+				<div class="table">
+				<table>
+					<tr>
+					<th><input type="checkbox" id="0" name="vehicle1" value="" onClick="toggle(this)" {% if df_head|length > 0 %}disabled{% endif %}></th>
+					<th>EVENT</th>
+					<th>PERIOD</th>
+					<th>FILE</th>
+					<th>TIMESTAMP</th>
+					<th>USER</th>
+					<th>COMMENT</th>
+					</tr>
+					{% for item in obj %}
+					<tr>
+					<td><input type="checkbox" id="{{ item.id }}" name="check" value="{{ item.id }}" {% if df_head|length > 0 %}disabled{% endif %}></td>
+					<td>{{ item.event }}</td>
+					<td>{{ item.period }}</td>
+					<td>{{ item.file }}</td>
+					<td>{{ item.timestamp }}</td>
+					<td>{{ item.user.username }}</td>
+					<td>{{ item.comment }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+				</div>
+					</form>
+			</div>
+
+		</div>
+	 </div>
+
+
+ </div>
+<div class="jumbotron" id="jumbotron_content">
+	<form id="import_f" method="post" action="" {% if df|length == 0 %}style="display:none;"{%else%}{% endif %} onsubmit="showLoading_1();">{% csrf_token %}
+		<button class="btn" id="import_t" type="submit" form="import_f" name="import_t" value="import_t" onclick="return confirm('Please be sure that required Dimensions Entity,Konto and one of Value options was chosen. If yes, than click ok.')">Import in DB</button>
+		<input type="hidden" id="sheet_name_1" name="sheet_name" value="{{sheet}}"><br>
+	<table id="df_table">
+		<tr >
+
+			{% for item in df_head %}
+			<th>
+
+			<select name="dim_option" required>
+
+			<option>-none-</option>
+            <optgroup label="Dimension">
+			{% for item in obj_dim %}
+				{% if item.dimensionName == 'Custom 1' and item.new_name == None %}
+
+				{% elif item.dimensionName == 'Custom 2' and item.new_name == None %}
+
+				{% elif item.dimensionName == 'Custom 3' and item.new_name == None %}
+
+				{% elif item.dimensionName == 'Custom 4' and item.new_name == None %}
+
+				{% else %}
+					{% if item.dimensionName == 'Reporting Event' or item.dimensionName == 'Reporting Period'%}
+					{% elif item.dimensionName == 'Custom 1' or item.dimensionName == 'Custom 2' %}
+					{% elif item.dimensionName == 'Custom 3' or item.dimensionName == 'Custom 4' %}
+					{% else %}
+					<option>
+					{% if item.dimensionName == 'Custom 1' and item.new_name != 'None' %}
+						{{ item.new_name }}
+					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+						{{ item.new_name }}
+					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+						{{ item.new_name }}
+					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+						{{ item.new_name }}
+					{% else %}
+						{{ item.dimensionName }}
+					{% endif %}
+				{% endif %}
+			</option>
+
+				{% endif %}
+			{% endfor %}
+				</optgroup>
+				<optgroup label="Kennzahl">
+				{% for item in obj_b %}
+				<option>{{item.name}}</option>
+				{% endfor %}
+					</optgroup>
+			</select>
+				<input type="hidden" name="index_df_col" value="{{forloop.counter}}">{{item}}</input>
+				<input type="hidden" name="df_names" value="{{item}}">
+			</th>
+			{% endfor %}
+		</tr>
+
+
+			{% for item in df %}
+		<tr>
+			{% for i in item %}
+
+		<td>{{ i }}</td>
+			{% endfor %}
+			</tr>
+			{% endfor %}
+
+
+	</table>
+		<input type="hidden" name="f" value="{{f}}">
+		<input type="hidden" name="event" value="{{event}}">
+		<input type="hidden" name="period" value="{{period}}">
+		<input type="hidden" name="comment" value="{{comment}}">
+		</form>
+</div>
+{% endblock %}

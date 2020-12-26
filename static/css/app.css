@@ -1,0 +1,619 @@
+:root{
+    --main-color:#D54519;
+    --main-color-hover:#B33C14;
+    --main-color-unactive:#EAAE9A;
+    --dimension-color:#5e5e5e;
+    --border-color:#c4c2c2;
+    --input-height:27px;
+}
+html, body {
+ height: 100%;
+}
+h2{
+    text-align:center;
+    color: var(--dimension-color);
+}
+
+.jumbotron{
+    overflow-x:auto;
+    overflow-y:auto;
+
+}
+.container{
+    min-width:1400px;
+}
+#main_container{
+    height:71%;
+    overflow-x:auto;
+    overflow-y:auto;
+    min-width:1500px;
+}
+#loading{
+display:none;
+}
+
+#main_container .container{
+    min-width:1300px;
+}
+#create_user{
+    border:solid var(--border-color) 1px;
+    display:none;
+    color:blue;
+}
+.navbar-brand {
+  font-family: 'GenomeThin', sans-serif;
+}
+
+#2:checked{
+    background-color:var(--main-color);
+}
+td input:hover{
+    background-color:var(--main-color-unactive);
+}
+table {
+    border-collapse:separate;
+    border:solid var(--border-color) 1px;
+    border-radius:6px;
+    -moz-border-radius:6px;
+}
+
+td, th {
+    border-left:solid var(--border-color) 1px;
+    border-top:solid var(--border-color) 1px;
+    color:var(--main-color);
+    width:200px;
+}
+
+th {
+    color:white;
+    background-color: var(--main-color-unactive);
+    border-top: none;
+}
+
+td:first-child, th:first-child {
+     border-left: none;
+}
+
+.table{
+    margin-top:4em;
+    text-align:center;
+}
+.table table{
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.export{
+    margin-left: 270px;
+}
+.btn{
+    background-color:var(--main-color);
+    margin: 2px 2px;
+    color:white;
+}
+.btn:hover{
+    background-color:var(--main-color-hover);
+    color: white;
+
+}
+.mapping_action_1{
+    display:block ruby;
+}
+#df_table{
+    overflow-x:auto;
+    overflow-y:auto;
+    display:block;
+}
+#labels_md{
+    width:550px;
+    margin-left: 2em;
+}
+#md_label_1{
+    width:160px;
+}
+#md_label_2,
+#md_label_3{
+    width:165px;
+}
+
+#df_table_1{
+    overflow-x:auto;
+    overflow-y:auto;
+    margin-left:auto;
+    margin-right:auto;
+}
+#sub_main_container{
+    position: -webkit-sticky;
+  position: sticky;
+  max_height:800px;
+}
+#s_master_d{
+    margin-left:0.3%;
+}
+
+.messages{
+    padding-left: 0px;
+}
+.messages ol{
+    padding-left: 5px;
+}
+.main_btn{
+    text-align:center;
+    ;
+}
+.main_btn button{
+     display:inline;
+     width:180px;
+     height:38px;
+     background-color:var(--main-color-unactive);
+
+}
+.sub_btn button{
+    margin: 2px 2px;
+    width:260px;
+    height:38px;
+    background-color:var(--main-color-unactive);
+}
+.container a{
+    text-decoration:none;
+    color: white;
+}
+.row{
+    margin-left:-5%;
+}
+#row{
+    max-height:600px;
+    padding-bottom:20px;
+}
+#introduction{
+    height:500px;
+    bottom:0;
+}
+#introduction_txt{
+    position:relative;
+    text-align:center;
+    top:50%;
+}
+
+#active,
+#active_1{
+    background-color:var(--main-color);
+}
+.custom_file,
+#Tname{
+    border-style: solid;
+    border-width: 1px 1px;
+    border-radius: 5px;
+    border-color:var(--main-color);
+    width:300px;
+    height:38px;
+
+}
+#col_md_9,
+#col_md_3{
+    padding:0px;
+}
+#custom-file{
+    height:5px;
+}
+
+
+#Dname,
+select option,
+select{
+    border-style: solid;
+    border-width: 1px 1px;
+    border-radius: 5px;
+    border-color:var(--main-color);
+    color:var(--main-color);
+    margin-bottom:5px;
+    padding:0px;
+    width:165px;
+}
+#myfile,
+#file,
+#sheet_name,
+#Dname_comment{
+    border-style: solid;
+    border-width: 1px 1px;
+    border-radius: 5px;
+    border-color:var(--main-color);
+    color:var(--main-color);
+    margin-bottom:5px;
+    padding:0px;
+    width:325px;
+}
+.dimensions ul,
+.rules_list ul,
+.sets_list ul{
+    float:right;
+}
+.dimensions input,
+.rules_list input,
+.sets_list input{
+    background-color: var(--dimension-color);
+    width:200px;
+     size:100px;
+}
+
+
+.dimensions button,
+.rules_list button,
+.sets_list button{
+    font-size:0.7em;
+    width:50px;
+    padding:0px;
+    margin-left:127px;
+
+}
+#addInputs,
+#addOutputs{
+    font-size:0.7em;
+    width:50px;
+    padding:0px;
+    margin-left:50pxpx;
+}
+#bottom_btn{
+    padding-bottom:30px;
+}
+.dim_attributes{
+    max-height:350px:
+}
+h1{
+    color:white;
+    font-size: 0.5em;
+}
+.dim_name label,
+.dim_attributes label,
+label{
+    color:var(--main-color);
+}
+
+#dim_action button,
+.dim_action button,
+#dim_action btn,
+.dim_action btn{
+    display: inline;
+    position:fix;
+    font-size:0.8em;
+    width:80px;
+    padding:0px;
+    margin-left:5px;
+}
+.rules_action button,
+.set_action button{
+    display: inline;
+    position:fix;
+    font-size:0.7em;
+    width:50px;
+    padding:0px;
+    margin-left:5px;
+}
+
+.dim_name input,
+.dim_attributes input,
+.dim_attributes select,
+select option{
+    border-style: solid;
+    border-width: 1px 1px;
+    border-radius: 5px;
+    border-color:var(--main-color);
+    width:165px;
+    height:var(--input-height);
+    margin-top:5px;
+    color:var(--main-color);
+}
+.dim_attributes input,
+#exampleModal input{
+    display:inline;
+    margin-top:2px;
+    margin-bottom:2px;
+    height:var(--input-height);
+}
+.dim_attributes ul,
+.dim_attributes ol,
+.dimensions ul,
+.dimensions ol,
+.rules_list ul,
+.rules_list ol,
+.sets_list ul,
+.sets_list ol{
+    padding:0;
+}
+.dim_name input{
+    margin-bottom:5px;
+}
+.dim_attributes ul,
+.dim_name input,
+.dim_name label{
+    margin-left:-1.5em;
+
+}
+.dim_attributes button{
+    font-size:0.7em;
+    width:50px;
+    padding:0px;
+    float:right;
+    margin-right:55px;
+}
+
+.add_btn button,
+#add_field,
+#delete_field{
+
+    position:fix;
+    font-size:0.7em;
+    width:50px;
+    padding:0px;
+    margin-left:42px;
+}
+
+#delete_field{
+    margin-left:5px;
+}
+.mapping_action button{
+    display: inline;
+    position:fix;
+    font-size:0.95em;
+    width:100px;
+    height:24px;
+    padding:0px;
+    margin-left:42px;
+    margin-top:-3px;
+}
+.mapping_slct{
+    padding:0px;
+    margin-left:42px;
+    width:180px;
+}
+
+.form_rules,
+.form_sets,
+.form_rules_1,
+#form_output_f,
+#form_target_dim{
+    margin-top:0px;
+}
+#form_output_f,
+#form_target_dim{
+    width:150px;
+
+}
+.dim_action{
+    display:inline-block;
+
+}
+#action_sets{
+    margin-left:20%;
+}
+
+.btn,
+.dim_attributes button,
+.dim_action button,
+.dimensions button,
+.sub_btn button,
+.main_btn button,
+.dimensions input,
+.add_btn button,
+.mapping_slct,
+#logout_btn,
+#select_e_p select,
+#select_e select,
+#select_e_rules select,
+#select_e_rules2 select,
+#select_e_rules3 select,
+#select_e_rules_2 select,
+#select_e_rules_2_2 select,
+#select_e_rules_2_3 select,
+#select_e_rule_fields select,
+#select_sets select,
+#select_output select,
+#perform_btn button,
+#export button,
+#export select,
+textarea{
+    border-style: solid;
+    border-width: 1px 1px;
+    border-radius: 5px;
+    //border-color:var(--border-color);
+
+}
+#select_e_rules,
+#select_e_rules2,
+#select_e_rules3,
+#select_e_rules_2,
+#select_e_rules_2_2,
+#select_e_rules_2_3{
+    display:ruby;
+    margin-left:-4em;
+}
+#select_output,
+#admin_action{
+    text-align:center;
+}
+#select_output select,
+#admin_action button{
+    margin-left:auto;
+}
+#dim_list,
+#rule_list,
+#set_list{
+    padding:0px;
+}
+#dim_atr{
+    max-height:500px;
+}
+#dim_atr ul{
+    max-height:700px;
+}
+
+#form_file_name input{
+    width:325.6px;
+    height:var(--input-height);
+}
+#form_custom_file ol,
+#form_file_name ol{
+    padding:0px;
+    width:50px;
+    display:inline;
+}
+#form_custom_file button,
+#form_file_name button,
+#admin_action button,
+#btn_dlt_importF,
+#perform_btn button,
+#export button{
+    position:fix;
+    font-size:0.95em;
+    width:100px;
+    padding:0px;
+    margin-top:-3px;
+}
+
+#select_e_p ol,
+#select_e_p ul{
+    padding:0px;
+    display:inline;
+}
+#select_e_p select,
+#select_e select,
+#select_output select,
+.mapping_action select,
+#select_e_rules select,
+#select_e_rules2 select,
+#select_e_rules3 select,
+#select_e_rules_2 select,
+#select_e_rules_2_2 select,
+#select_e_rules_2_3 select,
+#select_sets select,
+#select_e_rule_fields select,
+#export select{
+    width:160px;
+    margin-bottom:5px;
+    color:var(--main-color);
+
+}
+#select_e{
+    padding-left:42px;
+    overflow-x:auto;
+
+}
+#select_e select,
+#select_output select{
+    padding:0px;
+}
+
+#btn_imprt_importF{
+    position:fix;
+    font-size:0.95em;
+    width:100px;
+    padding:0px;
+}
+
+#select_e_rules select,
+#select_e_rules2 select,
+#select_e_rules3 select,
+#select_e_rules_2 select,
+#select_e_rules_2_2 select,
+#select_e_rules_2_3 select,
+#select_e_rule_fields select,
+#select_sets select,
+#select_e select{
+    width:150px;
+}
+#select_e_rules ul,
+#select_e_rules2 ul,
+#select_e_rules3 ul,
+#select_e_rules ol,
+#select_e_rules2 ol,
+#select_e_rules3 ol,
+#select_e_rule_fields ul,
+#select_e_rule_fields ol,
+#select_sets ul,
+#select_sets ol,
+#select_e_rules_2 ul,
+#select_e_rules_2_2 ul,
+#select_e_rules_2_3 ul,
+#select_e_rules_2 ol,
+#select_e_rules_2_2 ol,
+#select_e_rules_2_3 ol{
+    padding:0px;
+}
+#select_e_rules ul,
+#select_e_rules2 ul,
+#select_e_rules3 ul,
+#select_e_rules_2 ul,
+#select_e_rules_2_2 ul,
+#select_e_rules_2_3 ul{
+    display:flex;
+}
+#select_e_rules ul{
+    margin-top:20px;
+}
+
+#select_e_rules ol,
+#select_e_rules2 ol,
+#select_e_rules3 ol,
+#select_e_rules_2 ol,
+#select_e_rules_2_2 ol,
+#select_e_rules_2_3 ol,
+#select_e_rules_3 ol,
+#select_e_rule_fields ol,
+#select_sets ol{
+    width:150px;
+    display:inline;
+    margin-left:42px;
+}
+
+#select_e_rules,
+#select_e_rules2,
+#select_e_rules3,
+#select_e_rules_2,
+#select_e_rules_2_2,
+#select_e_rules_2_3{
+    display:block;
+}
+
+#select_sets ul{
+    height: 100px;
+    margin-top:15px;
+
+}
+#select_sets select{
+    margin-bottom:15px;
+    display:block;
+    margin-bottom:0;
+    margin-left:-1.2em;
+}
+
+#select_sets button{
+    font-size:0.7em;
+    width:50px;
+    padding:0px;
+    margin-left:13.5em;
+}
+#checkbox{
+    width:5px;
+    height:5px;
+    font-size:10px;
+}
+footer{
+
+  width: 100%;
+  height:50px;
+
+  margin-top:10px;
+}
+#footer{
+    text-align:center;
+    color:var(--main-color);
+}
+
+
+footer b{
+    color:black;
+}
+footer li{
+    height: 24px;
+}
+

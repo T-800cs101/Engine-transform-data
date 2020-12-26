@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<script>
+
+</script>
+<br>
+<br>
+ <div class="container">
+  <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+	  <button class="btn" type="submit"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit"><a href="{% url 'mapping_data'%}">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit"id="active" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="#">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+	 <div class="container">
+	 <div class="row">
+		 <div class="col-md-12">
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create new User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+            </div>
+            <div class="modal-body">
+				<form id="create_user_form" method="post">{% csrf_token %}
+					<div id="modal_body">
+					<label>Name:</label><br>
+					<input type="text" name="name" value=""><br>
+					<label>User Name:</label><br>
+					<input type="text" name="username" value=""><br>
+					<label>Password:</label><br>
+					<input type="password" name="pw" value=""><br>
+					<label>User is Admin?</label><br>
+					<select type="text" name="admin">
+						<option>No</option>
+						<option>Yes</option>
+					</select>
+						</div>
+				</form>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" name="submit" form="create_user_form">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+	 <div id="admin_action">
+
+	 <button class="btn" type="submit" name="create" form="none" data-toggle="modal" data-target="#exampleModal">Create</button>
+	 <button class="btn" type="submit" name="delete" form="form_admin">Delete</button>
+
+		 </div>
+		  <form id="form_admin" method="post">{% csrf_token %}
+		 <div class="table">
+		<table>
+			<tr>
+			<th><input type="checkbox" id="0" name="vehicle1" value=""></th>
+			<th>NAME</th>
+			<th>USER</th>
+			<th>PASSWORD</th>
+			<th>ROLE</th>
+			</tr>
+			{% for item in obj %}
+			<tr>
+			<td><input type="checkbox" id="{{ item.id }}" name="vehicle1" value="{{ item.id }}"></td>
+			<td>{{ item.first_name }}</td>
+			<td>{{ item.username }}</td>
+			<td>******</td>
+			<td>{% if item.is_superuser == True %}Admin{% else %}User{% endif %}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		 </div>
+		  </form>
+		 </div>
+	 </div>
+ </div>
+ </div>
+{% endblock %}

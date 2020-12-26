@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+function toggle(source) {
+  checkboxes = document.getElementsByName('check');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+
+function showLoading() {
+    document.getElementById('loader').style.display = 'block';
+    $("#main_content").css("display","none");
+    $("#logout_btn").attr("disabled","true");
+}
+function showLoading_1() {
+    document.getElementById('loader_2').style.display = 'block';
+    $("#main_content").css("display","none");
+    $("#jumbotron_content").css("display","none");logout_btn
+    $("#logout_btn").attr("disabled","true");
+}
+document.onreadystatechange = function() {
+            if (document.readyState !== "complete") {
+                document.querySelector(
+                  "body").style.visibility = "hidden";
+                document.querySelector(
+                  "#loader").style.visibility = "visible";
+
+            } else {
+                document.querySelector(
+                  "#loader").style.display = "none";
+
+                document.querySelector(
+                  "body").style.visibility = "visible";
+            }
+        };
+
+function clickPath() {
+    $("#uploadfile").click();
+}
+</script>
+<style>
+	#loader{
+			display:none;
+		}
+        #loader,
+         #loader_2{
+            border: 12px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 12px solid #D54519;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+            z-index: 999;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .center {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+</style>
+<br>
+<br>
+<div id="loader" class="center"></div>
+ <div class="container" id="main_content">
+  <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+      <button class="btn" type="submit"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit"><a href="{% url 'mapping_data'%}">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit" id="active"><a href="#">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+
+
+  <div class="container">
+      <div class="row">
+    <div class="col-md-3">
+        <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+          <li class="active"><button class="btn" type="submit" id="active_1"><a href="#">Export the Report</a></button></li>
+
+      </ul>
+			{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+			{% endif %}
+	  </div>
+    </div>
+    <div class="col-md-9" id="export">
+		<h2>Choose file to Download</h2>
+
+
+         <button class="btn" type="submit" id="export_file" name="export" form="form_export_tbl">Export</button>
+		{% if fileds_length|length > 0%}<label id="check">Select all</label><input type="checkbox" class="check"  name="check" value="Select all" onClick="toggle(this)" style="margin-left:1%;">{% endif %}
+        <form method="post" id="form_show_tbl" name="form_show_tbl" >
+			{% csrf_token %}
+	<select id="select" name='select' onchange="form_show_tbl.submit() || showLoading();">
+        <option></option>
+		<optgroup label="Imported Data">
+			{% for item in list_models %}
+			{% if item.0 == 'Imported Data' %}
+			<option name="{{item.0}}" value="{{item.0}}" {% if select == item  %}selected{% endif %}>{{item.0}}</option>
+			{% endif %}
+			{% endfor %}
+		</optgroup>
+		<optgroup label="Output Data">
+			{% for item in list_models %}
+			{% if item.0 == 'Output Data' %}
+			<option name="{{item.0}}" value="{{item.0}}" {% if select == item  %}selected{% endif %}>{{item.0}}</option>
+			{% endif %}
+			{% endfor %}
+		</optgroup>
+		<optgroup label="Master Data">
+		{% for item in list_models %}
+			{% if item.0 != 'Imported Data' and item.0 != 'Output Data' and item.1 == 'none'%}
+			<option name="{{item.0}}" value="{{item.0}}" {% if select == item  %}selected{% endif %}>{{item.0}}</option>
+			{% elif item.1 == 'c'%}
+			<option name="{{item.0}}" value="{{item.0}}" {% if select == item  %}selected{% endif %}>{{item.0}}</option>
+			{% endif %}
+			{% endfor %}
+		</optgroup>
+		<optgroup label="Mapping Data">
+		{% for item in list_models %}
+			{% if item.1 == 'm' %}
+			<option name="{{item.0}}" value="{{item.0}}" {% if select == item  %}selected{% endif %}>{{item.0}}</option>
+			{% endif %}
+			{% endfor %}
+		</optgroup>
+	</select>
+        </form>
+		<form id="form_export_tbl" method="post" onsubmit='showLoading();'>{% csrf_token %}
+			<input type="hidden" name="db_tbl" value="{{select}}">
+				<div class="table">
+				<table>
+					<tr>
+						{% for item1, item2 in fields %}
+
+					<th><input type="checkbox" class="check" id="{{forloop.counter}}" name="check" value="{{forloop.counter}}" ><br>
+						{% if item1 == 'custom_1'%}
+							{{item2}}
+						{% elif item1 == 'custom_2'%}
+							{{item2}}
+						{% elif item1 == 'custom_3'%}
+							{{item2}}
+						{% elif item1 == 'custom_4'%}
+							{{item2}}
+						{% else %}
+							{{item1}}
+						{% endif %}</th>
+						{% endfor %}
+
+					</tr>
+						{% for item in b %}
+					<tr>
+						{% for i in item %}
+
+					<td>{{ i }}</td>
+						{% endfor %}
+						</tr>
+						{% endfor %}
+
+				</table>
+				</div>
+			</form>
+  </div>
+
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+ 
+
+
+</div>
+{% endblock %}

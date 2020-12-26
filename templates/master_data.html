@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active" onload="myFunction()">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <script>
+$(document).ready(function(){
+	var count = 1;
+	var id_column = 'input';
+	var max_length = document.getElementById("ol_field").getElementsByTagName("ol").length;
+  $("#add_field").click(function(){
+  	var result = id_column+count.toString();
+  	var result_dt = "input_dt"+count.toString();
+  	var result_len = "input_len"+count.toString();
+  	var i;
+  	var max_num_column = 13 - max_length;
+	if(count < max_num_column){
+    $("#ol_field").append('<ol><input type="checkbox" id="checkbox" name="check" value="{{ item }}" style="margin-right:5px;"><input type="text" id="input" name="input"><select id="input_dt" name="input_dt" style="margin-left:4px;"><option type="text" value=""></option><option type="text" value="character" style="margin-left:5px;">character</option><option type="text" value="integer">integer</option></select><input type="text" id="input_len" name="input_len" value="" style="margin-left:4px;"></ol>');
+	count++;
+	var e = document.getElementById("input");
+	var e_dt = document.getElementById("input_dt");
+	var e_len = document.getElementById("input_len");
+  	e.id = result;
+  	e_dt.id = result_dt;
+  	e_len.id = result_len;
+  	e.name = result;
+  	e_dt.name = result_dt;
+  	e_len.name = result_len;
+
+	div1 = document.getElementById("#ol_field");
+	div1.style.height = div1.offsetHeight+"px";
+	 var element = document.getElementById("row");
+     element.scrollTop = element.scrollHeight;
+     }
+     else{
+     	alert("Your reached the max number of columns.");
+     }
+    });
+    });
+
+function myFunction() {
+  var elmnt = document.getElementById("bottom_btn");
+  elmnt.scrollIntoView();
+}
+
+function showDim(){
+var a = "{{ list_default_dim }}";
+var b = "{{ dimension }}";
+var max_length = document.getElementById("ol_field").getElementsByTagName("ol").length;
+var counter = 4;
+var el = document.querySelectorAll("[id*='Dname_1']");
+document.getElementById("add_field").style.display = 'inline';
+document.getElementById("dim_name").style.display = 'block';
+document.getElementById("D_data_type_1").disabled = false;
+document.getElementById("D_data_type_2").disabled = false;
+document.getElementById("D_data_type_3").disabled = false;
+document.getElementById("D_length_1").disabled = false;
+document.getElementById("D_length_2").disabled = false;
+document.getElementById("D_length_3").disabled = false;
+if(!a.includes(b)){
+document.getElementById("Dname").disabled = false;
+
+while(counter <= max_length){
+	document.getElementById("Dname_"+counter.toString()).disabled = false;
+	document.getElementById("D_data_type_"+counter.toString()).disabled = false;
+	document.getElementById("D_length_"+counter.toString()).disabled = false;
+	counter ++;
+}
+document.getElementById("add_field").disabled = false;
+document.getElementById("delete_field").disabled = false;
+}
+else{
+while(counter <= max_length){
+	document.getElementById("Dname_"+counter.toString()).disabled = false;
+	document.getElementById("D_data_type_"+counter.toString()).disabled = false;
+	document.getElementById("D_length_"+counter.toString()).disabled = false;
+	counter ++;
+}
+document.getElementById("add_field").disabled = false;
+document.getElementById("delete_field").disabled = false;
+}
+document.getElementById("dim_attributes").style.display = 'block';
+document.getElementById("dim_action").style.display = 'block';
+document.getElementById("h2").style.display = 'none';
+}
+
+</script>
+<br>
+<br>
+ <div class="container" id="sub_main_container">
+	 <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+		 <button class="btn" type="submit" id="active"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit" ><a href="{% url 'mapping_data'%}">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+
+<div class="container" >
+  <div class="row" id="row">
+    <div class="col-md-3">
+       <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+          <li><button class="btn" type="submit" id="active_1"><a href="{% url 'master_data'%}">Browse/Define Dimensiones</a></button></li>
+          <li><button class="btn" type="submit" ><a href="{% url 'import_master_d'%}">Import Master Data</a></button></li>
+        <li><button class="btn" type="submit"><a href="{% url 'brows_master_t'%}">Browse/Define Master Data</a></button></li>
+      </ul>
+         </div>
+		 {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+{% endif %}
+	  </div>
+
+    <div class="col-md-7" id="dim_atr">
+     <form id="my-form" method="POST" action="" >{% csrf_token %}
+		 <div  class="dim_name" id="dim_name" {% if dimension == ''%} style="display:none;"{% endif %}
+		 										{% if messages %}style="display:none;"{% endif %}>
+  <label for="Dname">Dimmension Name:</label>
+
+		 <div class="row">
+			 <div class="col-md-8">
+  <input type="text" id="Dname" name="Dname"  {% if dimension == '' %}value="" {% else %}value="{{ dimension }}"{% endif%}disabled>
+				  <div class="dim_action">
+	<button class="btn"  type="submit" id="change_dimension" form="none" onclick="showDim()">Change dim</button>
+	<button class="btn"  type="submit" name="submit_fields"  form="my-form" value="{{ dimension }}" onclick="return confirm('Are you sure you wannt to save?')">Save dim</button>
+		</div>
+				 </div>
+
+
+		 </div>
+  </div>
+		 {% if dimension == ''%}<h2 style="text-align:center;" id="h2">Chose one of dimensions please</h2>{% endif %}
+		 <div  class="dim_attributes" id="dim_attributes" {% if dimension == ''%} style="display:none;"{% endif %}>
+  <ul id="ol_field" {% if messages %}style="display:none;"{% endif %}><br>
+	  <div id="labels_md">
+    <label for="Dname_1" id="md_label_1">Attributes:</label>
+	<label for="Dname_1" id="md_label_2">Type:</label>
+  	<label for="Dname_1" id="md_label_3">Length:</label><br>
+		  </div>
+	  {% for item in list_np_dt %}
+	  <input type="hidden" id="list_np_dt" name="list_np_dt" value={{item.0}}>
+		<ol >
+			{% if item.0 != 'long_descr' %}
+			{% if item.0 != 'code' %}
+			{% if item.0 != 'short_descr' %}
+				<input type="checkbox" id="checkbox" name="check" value="{{ item.0 }}">
+
+			{% else %}
+				<input type="checkbox" id="checkbox" name="check" value="{{ item.0 }}" disabled>
+
+			{% endif %}
+			{% else %}
+				<input type="checkbox" id="checkbox" name="check" value="{{ item.0 }}" disabled>
+
+			{% endif %}
+			{% else %}
+				<input type="checkbox" id="checkbox" name="check" value="{{ item.0 }}" disabled>
+			{% endif %}
+			<span title="Column Name"><input type="text" id="Dname_{{forloop.counter}}" name="Dname_{{forloop.counter}}" value="{% if dimension != '' %}{{ item.0 }}{% endif%}"disabled></span>
+
+				<select name="D_data_type_{{forloop.counter}}" id="D_data_type_{{forloop.counter}}" disabled>
+					<option type="text" value="character" {% if dimension != '' %}{% if item.1 != None %}selected{% endif %}{% endif %}>
+						character
+					</option>
+					<option type="text" value="integer" {% if dimension != '' %}{% if item.2 != None %}selected{% endif %}{% endif %}>
+						integer
+					</option>
+
+			</select>
+			<span title="Length"><input type="text" id="D_length_{{forloop.counter}}" name="D_length_{{forloop.counter}}" value="{% if dimension != '' %}{% if item.1 != None %}{{item.1}}{% else %}{{item.2}}{% endif %}{% endif %}"disabled></span>
+		</ol>
+		{% endfor %}
+  </ul>
+			 </div>
+  </form>
+
+		<div class="dim_action" {% if messages %}style="display:none;"{% endif %}>
+	<button class="btn" id="add_field" onclick="myFunction()" {% if dimension == ''%} style="display:none;"{% endif %} disabled>add</button>
+	<button class="btn" id="delete_field" type="submit" name="delete_dim" form="my-form" value="{{ dimension }}" onclick="return confirm('Are you sure you wannt to delete?')"{% if dimension == ''%} style="display:none;"{% endif %} disabled>Delete</button>
+		</div>
+
+  </div>
+    <div class="col-md-2" id="dim_list">
+		<div class="dimensions">
+	<ul id="dimensions">
+        <form method="POST" id="dim_form" action="">
+		 		{% csrf_token %}
+			{% for item in obj%}
+			<ol><input class="btn" type="submit" name="dimension" form="dim_form" {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% else %}
+																						value="{{ item.dimensionName }}"
+																					{% endif %} onclick="myFunction()"></ol>
+			{% endfor %}
+		</form>
+
+	</ul>
+
+		<!--<button class="btn" type="submit" id="add_dimension" onclick="showDim()">add</button>-->
+		</div>
+
+    </div>
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+ 
+
+
+{% endblock %}

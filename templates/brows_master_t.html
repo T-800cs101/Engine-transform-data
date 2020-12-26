@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script>
+    function myFunction() {
+      var max_length = document.getElementById("table_dim").getElementsByTagName("th").length;
+      var parentTable = document.getElementById('table_dim');
+      var myTd,myInput;
+      var myTr = document.createElement('tr');
+    var length = {{list_np|length}};
+
+      myTr.setAttribute('class','unit-table');
+        myTd = document.createElement('td');
+        myInput = document.createElement('input');
+        myInput.setAttribute('type','checkbox');
+        myInput.setAttribute('id','check_box');
+        myInput.setAttribute('name','check');
+        myInput.setAttribute('value','');
+        myTd.appendChild(myInput);
+        myTr.appendChild(myTd);
+
+        {% for item in list_np_dt %}
+        myTd = document.createElement('td');
+        myInput = document.createElement('input');
+
+        //{% if item.2 != None %} myInput.setAttribute('type','number');{% else %}
+        myInput.setAttribute('type','text');
+        //{% endif%}
+        myInput.setAttribute('name','td_table');
+        myInput.setAttribute('value','');
+        myTd.appendChild(myInput);
+        myTr.appendChild(myTd);
+  {% endfor %}
+
+
+  parentTable.appendChild(myTr);
+
+}
+function change_tbl(){
+   $("#table_dim :input").prop("disabled", false);
+   $("#add_field").prop("disabled", false);
+
+}
+function toggle(source) {
+  checkboxes = document.getElementsByName('check');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+function DimFunction() {
+  var elmnt = document.getElementById("bottom_btn");
+  elmnt.scrollIntoView();
+}
+
+
+</script>
+<br>
+<br>
+ <div class="container">
+   <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+       <button class="btn" type="submit" id="active"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit" ><a href="{% url 'mapping_data' %}">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+          <li><button class="btn" type="submit"><a href="{% url 'master_data'%}">Browse/Define Dimensiones</a></button></li>
+          <li><button class="btn" type="submit" ><a href="{% url 'import_master_d'%}">Import Master Data</a></button></li>
+        <li><button class="btn" type="submit" id="active_1"><a href="{% url 'brows_master_t'%}">Browse/Define Master Data</a></button></li>
+      </ul>
+          {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+{% endif %}
+         </div>
+	  </div>
+    <div class="col-md-7">
+        <h2>{% if option == '' %}Choose one of Master Data Tables{% else %}{{title}}{% endif %}</h2><br>
+	<div class="mapping_action" {% if option == '' %}style="display:none;"{% endif %}>
+        <div class="mapping_action_1">
+	<button class="btn"   onclick="change_tbl()" {% if option == '' %}disabled{% endif %}>Change</button>
+
+	<button class="btn"  type="submit" name="delete" value="delete" form="browse_form" {% if option == '' %}disabled{% endif %}>Delete</button>
+	<button class="btn"  type="submit" name="save" value="save" form="browse_form" {% if option == '' %}disabled{% endif %} >Save</button>
+    <button class="btn"  type="submit" name="export" value="export" form="browse_form" {% if option == '' %}disabled{% endif %}>Export to xlsx</button>
+            </div>
+
+
+<form id="browse_form" method="post" style="overflow-x:auto;" onsubmit="return validateForm();">{% csrf_token %}
+                <table id="table_dim">
+                    {{len_list}}<br>
+
+                    <tr>
+                    <th {% if option == ''%}style="display:none;"{% endif %}><input type="checkbox" id="0" name="vehicle1" value="" onClick="toggle(this)"
+                               disabled></th>
+                    {% for item in list_np_dt%}
+                        <input type="hidden" name="list_header" value="{{ item.0 }}">
+
+                        <th>{{ item.0 }}({% if item.2 == None %}
+                            char({{item.1}})
+                            <input type="hidden" name="length" value="{{ item.1 }}">
+                            <input type="hidden" name="d_t" value="char">
+                            {% else %}
+                            int({{item.2}})
+                            <input type="hidden" name="length" value="{{ item.2 }}">
+                            <input type="hidden" name="d_t" value="num">
+                            {% endif %})
+
+                        </th>
+                    {% endfor %}
+                    </tr>
+                        <input type="hidden" name="dim" value="{{ option }}">
+                    {% for item in list_np %}
+                    <tr class="unit-table" id="tr_dim">
+                        <td><input type="checkbox" id="{{ item.0 }}" name="check" value="{{ item.0 }}" disabled></td>
+                        <input type="hidden" name="list_np" value="{{ item.0 }}">
+                    {% for i in item %}
+                        <td><input type="text"id="td_table" name="td_table" {% if i == None %}value=""{% else%}value="{{ i }}"{% endif %} disabled></td>
+                        <input type="hidden" name="td_tbl_old" value="{{ i }}">
+                    {% endfor %}
+                    </tr>
+                    {% endfor %}
+
+                </table>
+
+                {% for item in obj_dim_name %}
+				 {% if item.dimensionName == 'Custom 1' and item.new_name == None %}
+
+				{% elif item.dimensionName == 'Custom 2' and item.new_name == None %}
+
+				{% elif item.dimensionName == 'Custom 3' and item.new_name == None %}
+
+				{% elif item.dimensionName == 'Custom 4' and item.new_name == None %}
+
+				{% else %}
+                    <input type="hidden" name="master_tabl" value={% if var_template == item.dimensionName  %}{% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						"{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						"{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						"{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						"{{ item.new_name }}"
+																					{% else %}
+																						"{{ item.dimensionName }}"
+																					{% endif %}
+                                                                                    {% endif %}
+		        {% endif %}
+                {% endfor %}
+     </form>
+  </div>
+    <div class="add_btn" {% if option == '' %}style="display:none;"{% endif %}>
+        <button class="btn" id="add_field" type="submit" form="none" onclick="myFunction()" disabled>add Field</button>
+    </div>
+          </div>
+        <div class="col-md-2" id="dim_list">
+		<div class="dimensions">
+	<ul id="dimensions">
+        <form method="post" id="form_dim">{% csrf_token %}
+			{% for item in obj_dim_name%}
+            {% if item.dimensionName == 'Custom 1' and item.new_name == None %}
+            {% elif item.dimensionName == 'Custom 1' and item.new_name == 'Custom 1' %}
+            {% elif item.dimensionName == 'Custom 2' and item.new_name == 'Custom 2' %}
+            {% elif item.dimensionName == 'Custom 3' and item.new_name == 'Custom 3' %}
+            {% elif item.dimensionName == 'Custom 4' and item.new_name == 'Custom 4' %}
+            {% elif item.dimensionName == 'Custom 2' and item.new_name == None %}
+            {% elif item.dimensionName == 'Custom 3' and item.new_name == None %}
+            {% elif item.dimensionName == 'Custom 4' and item.new_name == None %}
+            {% else %}
+			<ol><input class="btn"  type="submit" name="dimension"  {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% else %}
+																						value="{{ item.dimensionName }}"
+																					{% endif %}onclick="DimFunction()"></ol>
+			{% endif %}
+            {% endfor %}
+		</form>
+	</ul>
+
+		<!--<button class="btn" type="submit" id="add_dimension" onclick="showDim()">add</button>-->
+		</div>
+
+    </div>
+
+
+     <div class="clearfix visible-lg"></div>
+</div>
+  </div>
+
+
+
+
+</div>
+{% endblock %}

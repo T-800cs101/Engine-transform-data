@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+<script>
+	function validateForm() {
+  var x = document.forms["import_f"]["dim_option_1"].value;
+  if (x != "code") {
+    alert("Code is requeired field and must be a number");
+    return false;
+  }
+}
+</script>
+<br>
+<br>
+ <div class="container">
+ <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+     <button class="btn" type="submit" id="active"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit" ><a href="{% url 'mapping_data' %}">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+         <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+          <li><button class="btn" type="submit"><a href="{% url 'master_data'%}">Browse/Define Dimensiones</a></button></li>
+          <li><button class="btn" type="submit" id="active_1"><a href="{% url 'import_master_d'%}">Import Master Data</a></button></li>
+        <li><button class="btn" type="submit"><a href="{% url 'brows_master_t'%}">Browse/Define Master Data</a></button></li>
+      </ul>
+         </div>
+		 {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+{% endif %}
+	  </div>
+    <div class="col-md-7">
+		{% if dimension != '' %}
+		<h2>Choose file to upload data in to your Master Data Table directly</h2>
+		{% else %}
+		<h2>Choose Dimension please</h2>
+		{% endif %}
+
+
+     <form method="POST" id="form_custom_file"  action="" enctype="multipart/form-data" {% if dimension == '' %}style="display:none;"{% endif %}>
+         {% csrf_token %}
+		<input type="hidden" name="dim_name" value="{{dimension}}">
+         <ul>
+             <ol>
+              <input type="file" id="myfile" name="file_im" value="file_im" {% if dim != ''%}disabled{% endif %}>
+             </ol><br>
+
+            <ol><button class="btn"  type="submit" name="import" value="import" {% if dim != ''%}disabled{% endif %}>Import Data</button></ol>
+			 <ol> to </ol>
+             <!--<ol><select id="select" name='select' {% if dim != ''%}disabled{% endif %} required>-->
+			 <select disabled>
+                <option>{{dimension}}</option>
+			 </select></ol>
+         </ul>
+
+
+	</form>
+		<div class="jumbotron" {% if dimension == '' %}style="display:none;"{% endif %}>
+	<form id="import_f" method="post" action="" {% if df_head|length == 0 %}style="display:none;"{%else%}{% endif %} onsubmit="return validateForm()">{% csrf_token %}
+		<button class="btn" id="s_master_d" type="submit" form="import_f" name="submit" value="import"
+		onclick="return confirm('Are you sure you wannt to submit?Code field is required field and must have format of four digits and no double select of option is allowed')">submit</button>
+
+	<table id="df_table_1">
+		<tr >
+
+			{% for item in df_head %}
+			<th>
+			<select name="dim_option_{{forloop.counter}}" {% if item == 'code'%}required {% endif %}>
+				<option>-none-</option>
+
+			{% for item in list_header %}
+
+				<option>
+					{{ item }}
+				</option>
+
+			{% endfor %}
+			</select>
+				<input type="hidden" name="index_df_col" value="{{forloop.counter}}">{{item}}</input>
+				<input type="hidden" name="df_names" value="{{item}}">
+                <input type="hidden" name="dim" value="{{dim}}">
+			</th>
+			{% endfor %}
+		</tr>
+			{% for item in df1 %}
+		<tr>
+			{% for i in item %}
+		<td>{{ i }}</td>
+			{% endfor %}
+			</tr>
+			{% endfor %}
+	</table>
+		<input type="hidden" name="f" value="{{f}}">
+
+		</form>
+</div>
+  </div>
+		<div class="col-md-2" id="dim_list">
+		<div class="dimensions">
+	<ul id="dimensions">
+        <form method="POST" id="dim_form" action="">
+		 		{% csrf_token %}
+			{% for item in obj_dim_name%}
+			<ol><input class="btn" type="submit" name="dimension" form="dim_form" {% if item.dimensionName == 'Custom 1' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						value="{{ item.new_name }}"
+																					{% else %}
+																						value="{{ item.dimensionName }}"
+																					{% endif %} onclick="myFunction()"></ol>
+			{% endfor %}
+		</form>
+
+	</ul>
+
+		<!--<button class="btn" type="submit" id="add_dimension" onclick="showDim()">add</button>-->
+		</div>
+
+    </div>
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+
+</div>
+{% endblock %}

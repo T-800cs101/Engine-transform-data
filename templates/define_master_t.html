@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block logout %}
+<form method="post" id="form_logout" class="form-inline ml-auto" >
+	 {% csrf_token %}
+	<button type="submit" class="btn btn-danger btn-block"
+			id="logout_btn"  name="logout_btn" value="Log out" form="form_logout">Log out</button>
+</form>
+{% endblock logout %}
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">ETL-Tool</li>
+{% endblock %}
+
+{% block content %}
+ <script>
+    function myFunction() {
+      var max_length = document.getElementById("table_dim").getElementsByTagName("th").length;
+      var parentTable = document.getElementById('table_dim');
+      var myTd,myInput;
+      var myTr = document.createElement('tr');
+      myTr.setAttribute('class','unit-table');
+      for (var i=0; i< max_length;i++){
+        myTd = document.createElement('td');
+        myInput = document.createElement('input');
+        myInput.setAttribute('type','text');
+        myInput.setAttribute('name','data');
+        myInput.setAttribute('value','');
+        myTd.appendChild(myInput);
+        myTr.appendChild(myTd);
+  }
+  parentTable.appendChild(myTr);
+}
+function change_tbl(){
+   $("#table_dim :input").prop("disabled", false);
+}
+function toggle(source) {
+  checkboxes = document.getElementsByName('check');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+ </script>
+<br>
+<br>
+ <div class="container">
+   <div class="main_btn">
+	 <button class="btn" type="submit"><a href="{% url 'import_f'%}">Import Files</a></button>
+       <button class="btn" type="submit" id="active"><a href="{% url 'master_data'%}">Master Data</a></button>
+	 <button class="btn" type="submit" ><a href="#">Mapping Data</a></button>
+    <button class="btn" type="submit"><a href="{% url 'perform_data'%}">Proccess & Validate</a></button>
+	<button class="btn" type="submit"><a href="{% url 'export_data'%}">Output Data</a></button>
+	<button class="btn" type="submit" {% if user.is_superuser %}{% else %}  style="display:none;"{% endif %}><a href="{% url 'admin'%}">Admin</a></button>
+	 </div>
+<h1>Finatycs</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="sub_btn">
+      <ul class="nav nav-pills nav-stacked">
+          <li><button class="btn" type="submit"><a href="{% url 'master_data'%}">Browse/Define Dimensiones</a></button></li>
+          <li><button class="btn" type="submit"><a href="{% url 'import_master_d'%}">Import Master Data</a></button></li>
+        <li><button class="btn" type="submit"><a href="{% url 'brows_master_t'%}">Browse/Define Master Data</a></button></li>
+      </ul>
+         </div>
+        <ul class="messages">
+    {% for message in messages %}
+    <ol  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>{{ message }} </ol>
+    {% endfor %}
+</ul>
+	  </div>
+    <div class="col-md-9"> 
+	  <form id="form_file_name">
+         <ul>
+            <ol><button class="btn" type="submit" name="save_t" form="form_save">Save</button></ol>
+
+         </ul>
+	</form>
+        <div  id="select_e">
+                <form method="post" name="form_select">{% csrf_token %}
+
+                <select id="select" name='select' onchange="form_select.submit()">
+                <option></option>
+                {% for item in obj_dim_name %}
+                    <option id="{{ item.id }}"  name="{{ item.dimensionName }}" value="{{ item.dimensionName }}" {% if var_template == item.dimensionName %}selected{% endif %}>
+                                                                                    {% if item.dimensionName == 'Custom 1' and item.new_name != 'None' %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 2' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 3' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% elif item.dimensionName == 'Custom 4' and item.new_name != None %}
+																						{{ item.new_name }}
+																					{% else %}
+																						{{ item.dimensionName }}
+																					{% endif %}</option>
+		        {% endfor %}
+
+                    </select>
+                </form>
+                <form method="post" id="form_save">{% csrf_token %}
+                    <input type="hidden" name="table_name" value="{{var_template}}">
+                <table id="table_dim">
+                    <tr>
+
+                    {% for item in list_header%}
+                        <input type="hidden" name="header_dim" value="{{item}}">
+
+                        <th>{{ item }}</th>
+                    {% endfor %}
+                    </tr>
+                    {% for item in list_np %}
+                    <tr class="unit-table" id="tr_dim" name="tr_dim">
+                    {% for i in item %}
+                        <input type="hidden" name="old_data" value="{{ i }}">
+                        <td>{{i}}</td>
+
+                    {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                    </form>
+        </div>
+        <div class="add_btn">
+            <button class="btn" id="add_field" type="submit" form="none" onclick="myFunction()">add Field</button>
+        </div>
+  </div>
+
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+  </div>
+
+ 
+
+
+</div>
+{% endblock %}
